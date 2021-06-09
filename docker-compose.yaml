@@ -1,0 +1,15 @@
+version: '3'
+services:
+  datasette:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["datasette", "-p", "80", "-h", "0.0.0.0", "--cors", "/mnt/datasette/databases"]
+    ports:
+      - "8001:80"
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./static:/usr/share/nginx/html
+    ports:
+      - "8000:80"

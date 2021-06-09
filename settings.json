@@ -1,0 +1,5 @@
+{
+  "sql_time_limit_ms": 60000,
+  "max_returned_rows": 2000,
+  "hash_urls": 1
+}

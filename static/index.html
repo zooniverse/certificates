@@ -1,0 +1,113 @@
+<html>
+    <head>
+      <head>
+        <meta charset="utf-8">
+        <title>User Contributions certificate Generator!</title>
+        <script src="loadUserStats.js"></script>
+      </head>
+      <style type='text/css'>
+          body, html {
+              height: 100%;
+              padding: 0;
+          }
+          body {
+              color: black;
+              font-family: Georgia, serif;
+              font-size: 24px;
+              text-align: center;
+              margin: 0;
+          }
+          .certifcate {
+              border: 5px solid #000000;
+              width: 750px;
+              height: 450px;
+              background:
+                linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+                url("zooniverse-logo-teal.jpg");
+              background-repeat: no-repeat;
+              background-size: cover;
+
+          }
+          .marquee {
+              color: #00979D;
+              font-size: 48px;
+              margin: 20px;
+          }
+          .assignment {
+              margin: 20px;
+          }
+          .person {
+              border-bottom: 2px solid black;
+              font-size: 32px;
+              font-style: italic;
+              margin: 40px auto;
+          }
+          .reason {
+              margin: 20px;
+          }
+          .contributions {
+            font-style: normal;
+            font-size: 64px;
+            font-weight: bold;
+            color: #00979D;
+          }
+          .flex-container {
+              height: 100%;
+              padding: 0;
+              margin: 0;
+              display: -webkit-box;
+              display: -moz-box;
+              display: -ms-flexbox;
+              display: -webkit-flex;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+          }
+          .row {
+            width: auto;
+          }
+          .flex-item {
+            padding: 5px;
+            margin: 0.5em;
+            text-align: center;
+          }
+      </style>
+    </head>
+    <body>
+      <div class="flex-container">
+        <div class="row">
+          <div class="flex-item">
+            <p><strong>Generate a contribution certificate for a known user ID</strong>
+            <div>
+              <small>User ID</small>
+              <input type="number" id="userId"/>
+            </div>
+            <div>
+              <small>Workflow ID</small>
+              <input type="number" id="workflowId"/>
+            </div>
+            <div>
+              <button onclick='updateUserCertifcate()'>Create the volunteer certifcate</button>
+            </div>
+          </div>
+          <div class="flex-item">
+            <div class="certifcate">
+              <div class="marquee">
+                  Zooniverse
+              </div>
+              <div class="assignment">
+                  This certificate is presented to
+              </div>
+              <div class="person">TODO: get the username from the API</div>
+              <div class="reason">
+                  For contributing
+                  <br>
+                  <div id='user-contributions' class='contributions'>0</div>
+                  hours to a project
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+</html>
