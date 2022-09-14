@@ -45,3 +45,67 @@ async function updateUserCertifcate() {
   document.getElementById('user-contributions').textContent = userContributionsInHours
 
 }
+
+const PANOPTES_OPTIONS = {
+  headers: {
+    'accept': 'application/vnd.api+json; version=1',
+    'content-type': 'application/json'
+  }
+}
+
+class ZooniverseCertificateApp {
+  constructor () {
+    //
+    this.input = {
+      username: null,
+      project: null
+    }
+
+    this.data = {
+      user: undefined,
+    }
+
+    this.getInput()
+
+    console.log('+++ this.input ', this.input)
+    this.fetchUserData(this.input.username)
+  }
+
+  /*
+  Gets and saves user input.
+   */
+  getInput () {
+    try {
+      const params = (new URL(window.location)).searchParams
+      this.input.username = params.get('username')
+      this.input.project = params.get('project')
+      // Note: returns null if query param doesn't exist
+    } catch (err) {
+      this.handleError(err)
+    }
+  }
+
+  async fetchUserData (username) {
+    const _username = encodeURIComponent((username || '').trim())
+    if (!_username) return
+    const response = await fetch(`https://www.zooniverse.org/api/users?http_cache=true&login=${_username}`, PANOPTES_OPTIONS)
+    if (response.ok) {
+      const data = await response.json()
+      this.data.user = data?.users?.[0]
+      console.log('+++ user: ', this.data.user)
+      // TODO: set status
+    } else {
+      // TODO: error
+    }
+  }
+
+  handleError (err) {
+    console.error(err)
+  }
+}
+
+function init () {
+  console.log('xxx')
+}
+
+window.onload = function init() { window.zooApp = new ZooniverseCertificateApp() }

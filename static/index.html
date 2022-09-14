@@ -76,7 +76,18 @@
     <body>
       <div class="flex-container">
         <div class="row">
-          <div class="flex-item">
+          <form class="flex-item" action="?" method="get">
+            <label>
+              Username
+              <input type="text" name="username" />
+            </label>
+            <label>
+              Project Slug
+              <input type="text" name="project"/>
+            </label>
+            <button >Fetch Data</button>
+          </form>
+          <div class="flex-item" style="display: none">
             <p><strong>Generate a contribution certificate for a known user ID</strong>
             <div>
               <small>User ID</small>
