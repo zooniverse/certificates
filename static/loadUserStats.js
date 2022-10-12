@@ -36,6 +36,8 @@ async function loadUserContributionsInSeconds(userId, workflowId) {
   return userContributionsInSeconds;
 }
 
+/*
+TODO: remove
 async function updateUserCertifcate() {
   userId = document.getElementById("userId").value;
   workflowId = document.getElementById("workflowId").value;
@@ -43,8 +45,8 @@ async function updateUserCertifcate() {
   let userContributionsInHours = userContributionsInSeconds / (60.0 * 60.0)
   userContributionsInHours = userContributionsInHours.toFixed(4)
   document.getElementById('user-contributions').textContent = userContributionsInHours
-
 }
+*/
 
 const PANOPTES_OPTIONS = {
   headers: {
@@ -68,9 +70,9 @@ class ZooniverseCertificateApp {
 
     this.getInput()
 
-    console.log('+++ this.input ', this.input)
-    this.fetchUserData(this.input.username)
-    this.fetchProjectData(this.input.projectURL)
+    if (this.input.username && this.input.projectURL) {
+      this.fetchData()
+    }
   }
 
   /*
@@ -88,6 +90,31 @@ class ZooniverseCertificateApp {
       document.getElementsByName('projectURL')[0].value = this.input.projectURL
     } catch (err) {
       this.handleError(err)
+    }
+  }
+
+  async fetchData () {
+    await this.fetchUserData(this.input.username)
+    await this.fetchProjectData(this.input.projectURL)
+
+    try {
+      const user = this.data.user
+      const project = this.data.project
+      if (!user || !project) throw new Error()
+
+      const workflows = project?.links?.active_workflows || []
+
+      let totalTime = 0
+      for (let i = 0; i < workflows.length; i++) {
+        const wfID = workflows[i]
+        const wfTime = await loadUserContributionsInSeconds(user.id, wfID)
+        totalTime += wfTime || 0
+      }
+
+      console.log('totalTime: ', totalTime)
+
+    } catch (err) {
+      // TODO
     }
   }
 
@@ -116,6 +143,9 @@ class ZooniverseCertificateApp {
       this.data.project = data?.projects?.[0]
       console.log('+++ project', this.data.project)
       // TODO: set status
+
+      const workflows = this.data.project?.links?.active_workflows || []
+
     } else {
       // TODO: error
     }
