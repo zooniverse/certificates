@@ -75,6 +75,15 @@ class ZooniverseCertificateApp {
     }
   }
 
+  updateCertificate (userName = '???', projectName = '???', timeInSeconds = 0) {
+    let userContributionsInHours = timeInSeconds / (60 * 60)
+    userContributionsInHours = userContributionsInHours.toFixed(4)
+
+    document.getElementById('certificate-user').textContent = userName
+    document.getElementById('certificate-project').textContent = projectName
+    document.getElementById('certificate-time').textContent = userContributionsInHours
+  }
+
   /*
   Gets and saves user input.
    */
@@ -104,14 +113,18 @@ class ZooniverseCertificateApp {
 
       const workflows = project?.links?.active_workflows || []
 
-      let totalTime = 0
+      let contributedTimeInSeconds = 0
       for (let i = 0; i < workflows.length; i++) {
         const wfID = workflows[i]
         const wfTime = await loadUserContributionsInSeconds(user.id, wfID)
-        totalTime += wfTime || 0
+        contributedTimeInSeconds += wfTime || 0
       }
 
-      console.log('totalTime: ', totalTime)
+      this.updateCertificate(
+        user.display_name?.trim() || user.login,
+        project.display_name,
+        contributedTimeInSeconds
+      )
 
     } catch (err) {
       // TODO
