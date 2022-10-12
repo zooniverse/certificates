@@ -156,8 +156,4 @@ class ZooniverseCertificateApp {
   }
 }
 
-function init () {
-  console.log('xxx')
-}
-
 window.onload = function init() { window.zooApp = new ZooniverseCertificateApp() }
