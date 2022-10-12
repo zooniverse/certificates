@@ -58,7 +58,7 @@ class ZooniverseCertificateApp {
     //
     this.input = {
       username: null,
-      project: null
+      projectURL: null
     }
 
     this.data = {
@@ -69,6 +69,7 @@ class ZooniverseCertificateApp {
 
     console.log('+++ this.input ', this.input)
     this.fetchUserData(this.input.username)
+    this.fetchProjectData(this.input.projectURL)
   }
 
   /*
@@ -78,8 +79,12 @@ class ZooniverseCertificateApp {
     try {
       const params = (new URL(window.location)).searchParams
       this.input.username = params.get('username')
-      this.input.project = params.get('project')
+      this.input.projectURL = params.get('projectURL')
       // Note: returns null if query param doesn't exist
+
+      // Sync the UI with the input
+      document.getElementsByName('username')[0].value = this.input.username
+      document.getElementsByName('projectURL')[0].value = this.input.projectURL
     } catch (err) {
       this.handleError(err)
     }
@@ -97,6 +102,15 @@ class ZooniverseCertificateApp {
     } else {
       // TODO: error
     }
+  }
+
+  async fetchProjectData (projectURL) {
+    const projectRegex = /zooniverse.org\/projects\/([^\/]*\/[^\/]*)/i
+    // const matches = projectURL.match(projectRegex)
+    const projectSlug = projectURL.match(projectRegex)?.[1]
+
+    console.log('+++ projectSlug: ', projectSlug)
+
   }
 
   handleError (err) {
