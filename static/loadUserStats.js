@@ -63,6 +63,7 @@ class ZooniverseCertificateApp {
 
     this.data = {
       user: undefined,
+      project: undefined,
     }
 
     this.getInput()
@@ -106,11 +107,18 @@ class ZooniverseCertificateApp {
 
   async fetchProjectData (projectURL) {
     const projectRegex = /zooniverse.org\/projects\/([^\/]*\/[^\/]*)/i
-    // const matches = projectURL.match(projectRegex)
     const projectSlug = projectURL.match(projectRegex)?.[1]
+    const _projectSlug = encodeURIComponent((projectSlug || '').trim())
 
-    console.log('+++ projectSlug: ', projectSlug)
-
+    const response = await fetch(`https://www.zooniverse.org/api/projects?http_cache=true&slug=${_projectSlug}`, PANOPTES_OPTIONS)
+    if (response.ok) {
+      const data = await response.json()
+      this.data.project = data?.projects?.[0]
+      console.log('+++ project', this.data.project)
+      // TODO: set status
+    } else {
+      // TODO: error
+    }
   }
 
   handleError (err) {
