@@ -76,7 +76,18 @@
     <body>
       <div class="flex-container">
         <div class="row">
-          <div class="flex-item">
+          <form class="flex-item" action="?" method="get">
+            <label>
+              Username
+              <input type="text" name="username" />
+            </label>
+            <label>
+              Project URL
+              <input type="text" name="projectURL"/>
+            </label>
+            <button >Fetch Data</button>
+          </form>
+          <div class="flex-item" style="display: none">
             <p><strong>Generate a contribution certificate for a known user ID</strong>
             <div>
               <small>User ID</small>
@@ -98,12 +109,13 @@
               <div class="assignment">
                   This certificate is presented to
               </div>
-              <div class="person">TODO: get the username from the API</div>
+              <div id='certificate-user' class="person">Anonymous</div>
               <div class="reason">
                   For contributing
                   <br>
-                  <div id='user-contributions' class='contributions'>0</div>
-                  hours to a project
+                  <div id='certificate-time' class='contributions'>0</div>
+                  hours to
+                  <div id='certificate-project'>a project</div>
               </div>
             </div>
           </div>

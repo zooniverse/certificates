@@ -36,6 +36,8 @@ async function loadUserContributionsInSeconds(userId, workflowId) {
   return userContributionsInSeconds;
 }
 
+/*
+TODO: remove
 async function updateUserCertifcate() {
   userId = document.getElementById("userId").value;
   workflowId = document.getElementById("workflowId").value;
@@ -43,5 +45,128 @@ async function updateUserCertifcate() {
   let userContributionsInHours = userContributionsInSeconds / (60.0 * 60.0)
   userContributionsInHours = userContributionsInHours.toFixed(4)
   document.getElementById('user-contributions').textContent = userContributionsInHours
-
 }
+*/
+
+const PANOPTES_OPTIONS = {
+  headers: {
+    'accept': 'application/vnd.api+json; version=1',
+    'content-type': 'application/json'
+  }
+}
+
+class ZooniverseCertificateApp {
+  constructor () {
+    //
+    this.input = {
+      username: null,
+      projectURL: null
+    }
+
+    this.data = {
+      user: undefined,
+      project: undefined,
+    }
+
+    this.getInput()
+
+    if (this.input.username && this.input.projectURL) {
+      this.fetchData()
+    }
+  }
+
+  updateCertificate (userName = '???', projectName = '???', timeInSeconds = 0) {
+    let userContributionsInHours = timeInSeconds / (60 * 60)
+    userContributionsInHours = userContributionsInHours.toFixed(4)
+
+    document.getElementById('certificate-user').textContent = userName
+    document.getElementById('certificate-project').textContent = projectName
+    document.getElementById('certificate-time').textContent = userContributionsInHours
+  }
+
+  /*
+  Gets and saves user input.
+   */
+  getInput () {
+    try {
+      const params = (new URL(window.location)).searchParams
+      this.input.username = params.get('username')
+      this.input.projectURL = params.get('projectURL')
+      // Note: returns null if query param doesn't exist
+
+      // Sync the UI with the input
+      document.getElementsByName('username')[0].value = this.input.username
+      document.getElementsByName('projectURL')[0].value = this.input.projectURL
+    } catch (err) {
+      this.handleError(err)
+    }
+  }
+
+  async fetchData () {
+    await this.fetchUserData(this.input.username)
+    await this.fetchProjectData(this.input.projectURL)
+
+    try {
+      const user = this.data.user
+      const project = this.data.project
+      if (!user || !project) throw new Error()
+
+      const workflows = project?.links?.active_workflows || []
+
+      let contributedTimeInSeconds = 0
+      for (let i = 0; i < workflows.length; i++) {
+        const wfID = workflows[i]
+        const wfTime = await loadUserContributionsInSeconds(user.id, wfID)
+        contributedTimeInSeconds += wfTime || 0
+      }
+
+      this.updateCertificate(
+        user.display_name?.trim() || user.login,
+        project.display_name,
+        contributedTimeInSeconds
+      )
+
+    } catch (err) {
+      // TODO
+    }
+  }
+
+  async fetchUserData (username) {
+    const _username = encodeURIComponent((username || '').trim())
+    if (!_username) return
+    const response = await fetch(`https://www.zooniverse.org/api/users?http_cache=true&login=${_username}`, PANOPTES_OPTIONS)
+    if (response.ok) {
+      const data = await response.json()
+      this.data.user = data?.users?.[0]
+      console.log('+++ user: ', this.data.user)
+      // TODO: set status
+    } else {
+      // TODO: error
+    }
+  }
+
+  async fetchProjectData (projectURL) {
+    const projectRegex = /zooniverse.org\/projects\/([^\/]*\/[^\/]*)/i
+    const projectSlug = projectURL.match(projectRegex)?.[1]
+    const _projectSlug = encodeURIComponent((projectSlug || '').trim())
+
+    const response = await fetch(`https://www.zooniverse.org/api/projects?http_cache=true&slug=${_projectSlug}`, PANOPTES_OPTIONS)
+    if (response.ok) {
+      const data = await response.json()
+      this.data.project = data?.projects?.[0]
+      console.log('+++ project', this.data.project)
+      // TODO: set status
+
+      const workflows = this.data.project?.links?.active_workflows || []
+
+    } else {
+      // TODO: error
+    }
+  }
+
+  handleError (err) {
+    console.error(err)
+  }
+}
+
+window.onload = function init() { window.zooApp = new ZooniverseCertificateApp() }
